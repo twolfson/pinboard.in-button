@@ -11,6 +11,7 @@ appAPI.browserAction.setResourceIcon('grey_pin.png');
 
 appAPI.browserAction.onClick(function () {
   // alert("My new Crossrider extension works! The current page is: " + document.location.href);
+  appAPI.browserAction.setResourceIcon('blue_pin.png');
   console.log('oh hey');
   // console.log('oh hey');
 });
