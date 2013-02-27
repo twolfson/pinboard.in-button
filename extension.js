@@ -8,6 +8,12 @@ appAPI.ready(function($) {
     // Place your code here (you can also define new functions above this scope)
     // The $ object is the extension's jQuery object
 
-    // alert("My new Crossrider extension works! The current page is: " + document.location.href);
+    console.log('2');
 
+    // alert("My new Crossrider extension works! The current page is: " + document.location.href);
+    // var button = appAPI.browserAction;
+    // button.onClick(function () {
+    appAPI.browserAction.onClick(function () {
+      console.log('oh hey');
+    });
 });
