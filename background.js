@@ -4,14 +4,14 @@
   http://docs.crossrider.com/#!/guide/background_scope
 *************************************************************************************/
 
+// BUTTON CODE
 
-// Place your code here (ideal for handling browser button, global timers, etc.)
 
-appAPI.browserAction.setResourceIcon('grey_pin.png');
+var button = appAPI.browserAction;
+button.setResourceIcon('grey_pin.png');
 
-appAPI.browserAction.onClick(function () {
-  // alert("My new Crossrider extension works! The current page is: " + document.location.href);
-  appAPI.browserAction.setResourceIcon('blue_pin.png');
-  console.log('oh hey');
-  // console.log('oh hey');
+button.onClick(function () {
+  button.setResourceIcon('blue_pin.png');
+
+  appAPI.message.toActiveTab('yo dawg');
 });
