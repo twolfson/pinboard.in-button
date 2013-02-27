@@ -32,6 +32,10 @@ var appRequest = app.request,
         var err = new Error('HTTP ERROR (' + httpCode + '): Failed to reach "' + url + '"');
         cb(err);
       };
+    },
+    // TODO: POST in similar fashion
+    request = {
+      get: getFn
     };
 
 // BUTTON CODE
@@ -39,6 +43,7 @@ var button = appAPI.browserAction;
 button.setResourceIcon('grey_pin.png');
 
 button.onClick(function () {
+  console.log(arguments);
   button.setResourceIcon('blue_pin.png');
 
   appAPI.message.toActiveTab('yo dawg');
