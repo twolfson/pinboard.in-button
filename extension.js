@@ -10,10 +10,4 @@ appAPI.ready(function($) {
 
     console.log('2');
 
-    // alert("My new Crossrider extension works! The current page is: " + document.location.href);
-    // var button = appAPI.browserAction;
-    // button.onClick(function () {
-    appAPI.browserAction.onClick(function () {
-      console.log('oh hey');
-    });
 });
