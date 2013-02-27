@@ -48,11 +48,22 @@ appAPI.ready(function($) {
   // TODO: Add `data` to getFn
   // TODO: Handling of username + password
   // TODO: Prefer to use token over persistence of password
+  // var pinboard_uri = 'https://api.pinboard.in/v1/posts/get',
+  //     url = pinboard_uri + '?url=' + encodeURIComponent(window.location.href);
+  // request.get(url, function (err, res) {
+  //   console.log("ERROR?" + err);
+  //   console.log("RES?" + JSOn.stringify(res));
+  // });
   var pinboard_uri = 'https://api.pinboard.in/v1/posts/get',
       url = pinboard_uri + '?url=' + encodeURIComponent(window.location.href);
-  request.get(url, function (err, res) {
-    console.log("ERROR?" + err);
-    console.log("RES?" + JSOn.stringify(res));
+  app.request.get({
+    url: url,
+    onSuccess: function (res) {
+      console.log("RES?" + JSON.stringify(res));
+    },
+    onFailure: function (err) {
+      console.log("ERROR?" + err);
+    }
   });
 
   appAPI.message.addListener(function (msg) {
