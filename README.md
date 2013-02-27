@@ -12,3 +12,7 @@ Written via [crossrider][crossrider] for cross-browser support.
 
 - Provide "native" non-popup bookmark interaction
 - Provide UI hints (e.g. page is already bookmarked)
+
+## License
+Copyright (c) 2013 Todd Wolfson
+Licensed under the MIT license.
