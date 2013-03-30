@@ -10,6 +10,22 @@ module.exports = function(grunt) {
 
   // Set up common scripts
   var scripts = {};
+  function loadScripts() {
+    // Grab the scripts
+    var filepaths = glob.sync('lib/scripts/*.js');
+
+    console.log(filepaths);
+
+    // Read in each file and save it
+    filepaths.forEach(function (filepath) {
+      var content = fs.readFileSync(filepath, 'utf8'),
+          filename = path.basename(filepath, '.js');
+      scripts[filename] = content;
+
+      console.log(scripts);
+    });
+  }
+  loadScripts();
 
   // Project configuration.
   grunt.initConfig({
@@ -28,7 +44,7 @@ module.exports = function(grunt) {
         dest: 'build/background.js',
         engine: 'mustache',
         variables: {
-          scripts: scripts,
+          get scripts() { console.log('-_-'); return scripts; },
           config: config
         }
       }
@@ -77,21 +93,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-templater');
 
   // Set up script loader
-  grunt.registerTask('load-scripts', 'Load scripts into memory', function () {
-    // Grab the scripts
-    var filepaths = glob.sync('lib/scripts/*.js');
-
-    console.log(filepaths);
-
-    // Read in each file and save it
-    filepaths.forEach(function (filepath) {
-      var content = fs.readFileSync(filepath, 'utf8'),
-          filename = path.basename(filepath, '.js');
-      scripts[filename] = content;
-
-      console.log(scripts);
-    });
-  });
+  grunt.registerTask('load-scripts', 'Load scripts into memory', loadScripts);
 
   // Add a build task
   grunt.registerTask('build', 'load-scripts template');
