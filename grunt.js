@@ -1,15 +1,40 @@
 module.exports = function(grunt) {
 
+  // Set up configuration
+  var config = {
+    env: 'production'
+  };
+
   // Project configuration.
   grunt.initConfig({
+    // Configure our package
     pkg: '<json:package.json>',
+
+    // Linting
     lint: {
       files: ['grunt.js', 'lib/**/*.js']
     },
+
+    // Templating
+    template: {
+      background: {
+        src: 'lib/background.mustache.js',
+        dest: 'build/background.js',
+        variables: {
+          config: function () {
+            return config;
+          }
+        }
+      }
+    },
+
+    // Watch tasks
     watch: {
       files: '<config:lint.files>',
       tasks: 'default'
     },
+
+    // Linting configuration
     jshint: {
       options: {
         curly: true,
@@ -33,6 +58,12 @@ module.exports = function(grunt) {
       }
     }
   });
+
+  // Load in templater
+  grunt.loadNpmTasks('grunt-templater');
+
+  // Add a build task
+  grunt.registerTask('build', 'template');
 
   // Default task.
   grunt.registerTask('default', 'lint');
