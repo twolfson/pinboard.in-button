@@ -1,3 +1,6 @@
+var fs = require('fs'),
+    path = require('path'),
+    glob = require('glob');
 module.exports = function(grunt) {
 
   // Set up configuration
@@ -12,7 +15,7 @@ module.exports = function(grunt) {
 
     // Linting
     lint: {
-      files: ['grunt.js', 'lib/**/*.js']
+      files: ['grunt.js', 'lib/scripts/*.js']
     },
 
     // Templating
@@ -22,9 +25,11 @@ module.exports = function(grunt) {
         dest: 'build/background.js',
         engine: 'mustache',
         variables: {
-          config: function () {
-            return config;
-          }
+          // TODO: Bullet proof timings
+          scripts: {
+            request: grunt.file.read('lib/scripts/request.js')
+          },
+          config: config
         }
       }
     },
@@ -57,8 +62,13 @@ module.exports = function(grunt) {
       },
       globals: {
         exports: true,
+
+        // Crossrider variables
         appAPI: true,
-        unsafeWindow: true
+        unsafeWindow: true,
+
+        // Custom templating globals
+        app: true
       }
     }
   });

@@ -32,7 +32,8 @@
     "grunt": "~0.3.17",
     "express": "~3.1.0",
     "grunt-templater": "0.0.3-1",
-    "mustache": "~0.7.2"
+    "mustache": "~0.7.2",
+    "glob": "~3.1.21"
   },
   "keywords": []
 }
