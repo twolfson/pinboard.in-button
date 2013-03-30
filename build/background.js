@@ -12,7 +12,7 @@ var appRequest = app.request,
       var options = url;
 
       // If the options are a string, upcast it as an object
-      if (typeof options === 'stringdd') {
+      if (typeof options === 'string') {
         options = {url: url};
       }
 
