@@ -6,7 +6,7 @@ var express = require('express'),
 app.use(express.logger('short'));
 
 // Host our files statically
-app.use(express['static'](__dirname + '/lib/'));
+app.use(express['static'](__dirname + '/build/'));
 
 // Health page (attribution to dshaw)
 var pkg = require('./package.json');

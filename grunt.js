@@ -43,9 +43,11 @@ module.exports = function(grunt) {
         src: 'lib/background.mustache.js',
         dest: 'build/background.js',
         engine: 'mustache',
-        variables: {
-          get scripts() { console.log('-_-'); return scripts; },
-          config: config
+        variables: function () {
+          return {
+            get scripts() { console.log('-_-'); return scripts; },
+            config: config
+          };
         }
       }
     },
