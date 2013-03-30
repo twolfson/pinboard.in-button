@@ -31,8 +31,10 @@ module.exports = function(grunt) {
 
     // Watch tasks
     watch: {
-      files: '<config:lint.files>',
-      tasks: 'default'
+      dev: {
+        files: '<config:lint.files>',
+        tasks: 'build'
+      }
     },
 
     // Linting configuration
@@ -66,6 +68,14 @@ module.exports = function(grunt) {
 
   // Add a build task
   grunt.registerTask('build', 'template');
+
+  // Set up dev-config
+  grunt.registerTask('dev-config', 'Configure grunt for a development environment', function () {
+    config.env = 'development';
+  });
+
+  // Add a dev task
+  grunt.registerTask('dev', 'dev-config build watch:dev');
 
   // Default task.
   grunt.registerTask('default', 'lint build');
