@@ -76,8 +76,25 @@ module.exports = function(grunt) {
   // Load in templater
   grunt.loadNpmTasks('grunt-templater');
 
+  // Set up script loader
+  grunt.registerTask('load-scripts', 'Load scripts into memory', function () {
+    // Grab the scripts
+    var filepaths = glob.sync('lib/scripts/*.js');
+
+    console.log(filepaths);
+
+    // Read in each file and save it
+    filepaths.forEach(function (filepath) {
+      var content = fs.readFileSync(filepath, 'utf8'),
+          filename = path.basename(filepath, '.js');
+      scripts[filename] = content;
+
+      console.log(scripts);
+    });
+  });
+
   // Add a build task
-  grunt.registerTask('build', 'template');
+  grunt.registerTask('build', 'load-scripts template');
 
   // Set up dev-config
   grunt.registerTask('dev-config', 'Configure grunt for a development environment', function () {
