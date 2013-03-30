@@ -9,6 +9,8 @@
 // Rename appAPI to app (derp)
 var app = appAPI;
 
+console.log('xxx');
+
 // Make an error first request handler
 var appRequest = app.request,
     appRequestGet = appRequest.get,
@@ -48,6 +50,8 @@ var appRequest = app.request,
 request.get = getFn;
 
 appAPI.ready(function($) {
+
+  console.log('xyz');
 
   // Place your code here (you can also define new functions above this scope)
   // The $ object is the extension's jQuery object
