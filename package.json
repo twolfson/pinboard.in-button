@@ -31,7 +31,7 @@
   "devDependencies": {
     "grunt": "~0.3.17",
     "express": "~3.1.0",
-    "grunt-templater": "0.0.3-1",
+    "grunt-templater": "git://github.com/twolfson/grunt-templater.git#dev/support.dynamic.variables",
     "mustache": "~0.7.2",
     "glob": "~3.1.21"
   },
