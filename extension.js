@@ -48,6 +48,12 @@ var appRequest = app.request,
 request.get = getFn;
 
 appAPI.ready(function($) {
+  // TODO: Move this into a build conditional
+  // When the page is loaded, start up a watcher script
+  var location = window.location;
+  request.get('http://localhost:3000/', function () {
+    console.log(arguments);
+  });
 
   // Place your code here (you can also define new functions above this scope)
   // The $ object is the extension's jQuery object

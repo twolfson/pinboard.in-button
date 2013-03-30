@@ -44,6 +44,8 @@ button.setResourceIcon('grey_pin.png');
 
 // DEV: Give me the sexy. I want event emitter syntax for button and messaging
 
+console.log('abc');
+
 button.onClick(function (e) {
   // TODO: Use alt+shift+click for options
   // TODO: Notify user about this via description and tooltip
