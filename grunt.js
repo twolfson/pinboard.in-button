@@ -8,6 +8,9 @@ module.exports = function(grunt) {
     env: 'production'
   };
 
+  // Set up common scripts
+  var scripts = {};
+
   // Project configuration.
   grunt.initConfig({
     // Configure our package
@@ -25,10 +28,7 @@ module.exports = function(grunt) {
         dest: 'build/background.js',
         engine: 'mustache',
         variables: {
-          // TODO: Bullet proof timings
-          scripts: {
-            request: grunt.file.read('lib/scripts/request.js')
-          },
+          scripts: scripts,
           config: config
         }
       }
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
     // Watch tasks
     watch: {
       dev: {
-        files: '<config:lint.files>',
+        files: 'lib/**/*',
         tasks: 'build'
       }
     },
