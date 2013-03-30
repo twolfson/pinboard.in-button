@@ -1,0 +1,35 @@
+{
+  "name": "pinboard.in-button",
+  "description": "-Another pinboard.in browser extension.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/twolfson/pinboard.in-button",
+  "author": {
+    "name": "Todd Wolfson",
+    "email": "todd@twolfson.com",
+    "url": "http://twolfson.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/twolfson/pinboard.in-button.git"
+  },
+  "bugs": {
+    "url": "https://github.com/twolfson/pinboard.in-button/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/twolfson/pinboard.in-button/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/pinboard.in-button",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.3.17"
+  },
+  "keywords": []
+}
