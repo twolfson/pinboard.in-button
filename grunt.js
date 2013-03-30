@@ -20,6 +20,7 @@ module.exports = function(grunt) {
       background: {
         src: 'lib/background.mustache.js',
         dest: 'build/background.js',
+        engine: 'mustache',
         variables: {
           config: function () {
             return config;
@@ -54,7 +55,8 @@ module.exports = function(grunt) {
       },
       globals: {
         exports: true,
-        appAPI: true
+        appAPI: true,
+        unsafeWindow: true
       }
     }
   });
@@ -66,6 +68,6 @@ module.exports = function(grunt) {
   grunt.registerTask('build', 'template');
 
   // Default task.
-  grunt.registerTask('default', 'lint');
+  grunt.registerTask('default', 'lint build');
 
 };
