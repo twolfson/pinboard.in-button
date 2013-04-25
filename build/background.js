@@ -7,22 +7,27 @@
 // Rename appAPI to app (derp)
 var app = appAPI;
 
-var http = require('http');
-console.log('aaa');
-http.get('http://google.com/', function (res) {
-  console.log('yyy');
-  console.log(arguments);
-  res.on('data', function () {
-    console.log('zzz');
-  });
-  res.on('error', function () {
-    console.log('xxx');
-  });
-  res.on('end', function () {
-    console.log(arguments);
-    console.log('end');
-  });
+app.request.get({
+  url: 'http://google.com/',
+  onSuccess: console.log
 });
+
+// var http = require('http');
+// console.log('aaa');
+// http.get('http://google.com/', function (res) {
+//   console.log('yyy');
+//   console.log(arguments);
+//   res.on('data', function () {
+//     console.log('zzz');
+//   });
+//   res.on('error', function () {
+//     console.log('xxx');
+//   });
+//   res.on('end', function () {
+//     console.log(arguments);
+//     console.log('end');
+//   });
+// });
 
 // BUTTON CODE
 var button = appAPI.browserAction;
