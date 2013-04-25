@@ -6,6 +6,8 @@
 // Rename appAPI to app (derp)
 var app = appAPI;
 
+console.log(arguments.callee);
+
 // Make an error first request handler
 var appRequest = app.request,
     getFn = function (url, cb) {

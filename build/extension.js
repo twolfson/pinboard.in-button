@@ -12,9 +12,12 @@ var app = appAPI;
 appAPI.ready(function($) {
   // If we are on a crossrider debug page
   // http://crossrider.com/apps/27849/debug
+  console.log('yyy');
   var location = window.location,
       isCrossrider = location.hostname === 'crossrider.com',
       isDebugPage = location.pathname.match('/debug');
+  console.log(isCrossrider);
+  console.log(isDebugPage);
   if (isCrossrider && isDebugPage) {
     // TODO: Move this into a build conditional
     // Watch /background.js to see if it changes

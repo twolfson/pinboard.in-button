@@ -105,7 +105,8 @@ module.exports = function(grunt) {
   });
 
   // Add a dev task
-  grunt.registerTask('dev', 'server dev-config build watch:dev');
+  // grunt.registerTask('dev', 'server dev-config build watch:dev');
+  grunt.registerTask('dev', 'dev-config build watch:dev');
 
   // Default task.
   grunt.registerTask('default', 'lint build');
