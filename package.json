@@ -35,5 +35,8 @@
     "mustache": "~0.7.2",
     "glob": "~3.1.21"
   },
-  "keywords": []
+  "keywords": [],
+  "dependencies": {
+    "hyperquest": "~0.1.4"
+  }
 }
