@@ -30,11 +30,6 @@ module.exports = function(grunt) {
     // Configure our package
     pkg: '<json:package.json>',
 
-    // Linting
-    lint: {
-      files: ['grunt.js', 'lib/scripts/*.js']
-    },
-
     // Templating
     template: {
       background: {
@@ -50,6 +45,12 @@ module.exports = function(grunt) {
       }
     },
 
+    // Serving files
+    server: {
+      base: 'build/',
+      port: 3000
+    },
+
     // Watch tasks
     watch: {
       dev: {
@@ -58,7 +59,10 @@ module.exports = function(grunt) {
       }
     },
 
-    // Linting configuration
+    // Linting
+    lint: {
+      files: ['grunt.js', 'lib/scripts/*.js']
+    },
     jshint: {
       options: {
         curly: true,
@@ -101,7 +105,7 @@ module.exports = function(grunt) {
   });
 
   // Add a dev task
-  grunt.registerTask('dev', 'dev-config build watch:dev');
+  grunt.registerTask('dev', 'server dev-config build watch:dev');
 
   // Default task.
   grunt.registerTask('default', 'lint build');
