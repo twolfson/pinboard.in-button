@@ -789,11 +789,12 @@ process.nextTick = (function () {
     if (canSetImmediate) {
         return function (f) { return window.setImmediate(f) };
     }
-    console.log('wat', 'eee');
+    console.log('wat', 'eee', canPost);
 
     if (canPost) {
         var queue = [];
         window.addEventListener('message', function (ev) {
+          console.log('eveeee', ev.source, ev.data);
             if (ev.source === window && ev.data === 'process-tick') {
                 ev.stopPropagation();
                 if (queue.length > 0) {
