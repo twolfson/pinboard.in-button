@@ -60,20 +60,6 @@ function request(uri, opts, cb) {
 
 module.exports = request;
 },{"hyperquest":3}],4:[function(require,module,exports){
-var http = require('http');
-
-var https = module.exports;
-
-for (var key in http) {
-    if (http.hasOwnProperty(key)) https[key] = http[key];
-};
-
-https.request = function (params, cb) {
-    if (!params) params = {};
-    params.scheme = 'https';
-    return http.request.call(this, params, cb);
-}
-},{"http":5}],6:[function(require,module,exports){
 var punycode = { encode : function (s) { return s } };
 
 exports.parse = urlParse;
@@ -679,7 +665,21 @@ function parseHost(host) {
   return out;
 }
 
-},{"querystring":7}],8:[function(require,module,exports){
+},{"querystring":5}],6:[function(require,module,exports){
+var http = require('http');
+
+var https = module.exports;
+
+for (var key in http) {
+    if (http.hasOwnProperty(key)) https[key] = http[key];
+};
+
+https.request = function (params, cb) {
+    if (!params) params = {};
+    params.scheme = 'https';
+    return http.request.call(this, params, cb);
+}
+},{"http":7}],8:[function(require,module,exports){
 var events = require('events');
 var util = require('util');
 
@@ -1041,7 +1041,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":11}],7:[function(require,module,exports){
+},{"__browserify_process":11}],5:[function(require,module,exports){
 var isArray = typeof Array.isArray === 'function'
     ? Array.isArray
     : function (xs) {
@@ -1646,7 +1646,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":9}],5:[function(require,module,exports){
+},{"events":9}],7:[function(require,module,exports){
 var http = module.exports;
 var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
@@ -5715,7 +5715,7 @@ Req.prototype.setLocation = function (uri) {
 };
 
 })(require("__browserify_process"),require("__browserify_buffer").Buffer)
-},{"url":6,"http":5,"https":4,"stream":8,"through":14,"duplexer":15,"__browserify_process":11,"__browserify_buffer":13}],14:[function(require,module,exports){
+},{"url":4,"http":7,"https":6,"stream":8,"through":14,"duplexer":15,"__browserify_process":11,"__browserify_buffer":13}],14:[function(require,module,exports){
 (function(process){var Stream = require('stream')
 
 // through
