@@ -9,16 +9,9 @@ var app = appAPI;
 
 var hyperquest = require('hyperquest');
 hyperquest.get({
-  // scheme: 'http',
-  // host: 'google.com'
-  // uri: '/google.com/'
-  uri: 'ftp://google.com/'
-  // uri: 'http://google.com/'
-  // uri: 'https://google.com/'
-  // uri: 'http://google.com:80/'
-  // uri: 'https://google.com:80/'
+  uri: 'http://google.com/'
 }, function (err, res) {
-  console.log('zzz');
+  console.log(res);
 });
 // process.nextTick(function () {
 //   console.log(1);
@@ -645,6 +638,20 @@ function parseHost(host) {
 }
 
 },{"querystring":4}],5:[function(require,module,exports){
+var http = require('http');
+
+var https = module.exports;
+
+for (var key in http) {
+    if (http.hasOwnProperty(key)) https[key] = http[key];
+};
+
+https.request = function (params, cb) {
+    if (!params) params = {};
+    params.scheme = 'https';
+    return http.request.call(this, params, cb);
+}
+},{"http":6}],7:[function(require,module,exports){
 var events = require('events');
 var util = require('util');
 
@@ -765,21 +772,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":6,"util":7}],8:[function(require,module,exports){
-var http = require('http');
-
-var https = module.exports;
-
-for (var key in http) {
-    if (http.hasOwnProperty(key)) https[key] = http[key];
-};
-
-https.request = function (params, cb) {
-    if (!params) params = {};
-    params.scheme = 'https';
-    return http.request.call(this, params, cb);
-}
-},{"http":9}],4:[function(require,module,exports){
+},{"events":8,"util":9}],4:[function(require,module,exports){
 var isArray = typeof Array.isArray === 'function'
     ? Array.isArray
     : function (xs) {
@@ -840,7 +833,7 @@ exports.parse = function(str){
   return String(str)
     .split('&')
     .reduce(function(ret, pair){
-      try{
+      try{ 
         pair = decodeURIComponent(pair.replace(/\+/g, ' '));
       } catch(e) {
         // ignore
@@ -1086,7 +1079,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
 
 var EventEmitter = exports.EventEmitter = process.EventEmitter;
@@ -1272,7 +1265,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":10}],7:[function(require,module,exports){
+},{"__browserify_process":10}],9:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -1625,18 +1618,17 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":6}],9:[function(require,module,exports){
+},{"events":8}],6:[function(require,module,exports){
 var http = module.exports;
 var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
 
 http.request = function (params, cb) {
-console.log('pre-params', JSON.stringify(params));
     if (!params) params = {};
     if (!params.host) params.host = window.location.host.split(':')[0];
     if (!params.port) params.port = window.location.port;
     if (!params.scheme) params.scheme = window.location.protocol.split(':')[0];
-console.log('more params', params);
+    
     var req = new Request(new xhrHttp, params);
     if (cb) req.on('response', cb);
     return req;
@@ -1688,7 +1680,7 @@ var xhrHttp = (function () {
     }
 })();
 
-},{"events":6,"./lib/request":11}],12:[function(require,module,exports){
+},{"events":8,"./lib/request":11}],12:[function(require,module,exports){
 require=(function(e,t,n,r){function i(r){if(!n[r]){if(!t[r]){if(e)return e(r);throw new Error("Cannot find module '"+r+"'")}var s=n[r]={exports:{}};t[r][0](function(e){var n=t[r][1][e];return i(n?n:e)},s,s.exports)}return n[r].exports}for(var s=0;s<r.length;s++)i(r[s]);return i})(typeof require!=="undefined"&&require,{1:[function(require,module,exports){
 exports.readIEEE754 = function(buffer, offset, isBE, mLen, nBytes) {
   var e, m,
@@ -3775,7 +3767,7 @@ exports.format = function(f) {
 
 	function b64ToByteArray(b64) {
 		var i, j, l, tmp, placeHolders, arr;
-
+	
 		if (b64.length % 4 > 0) {
 			throw 'Invalid string. Length must be a multiple of 4';
 		}
@@ -5472,7 +5464,7 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 
 	function b64ToByteArray(b64) {
 		var i, j, l, tmp, placeHolders, arr;
-
+	
 		if (b64.length % 4 > 0) {
 			throw 'Invalid string. Length must be a multiple of 4';
 		}
@@ -5585,7 +5577,6 @@ function hyperquest (uri, opts, cb, extra) {
     if (uri !== undefined) opts.uri = uri;
     if (extra) opts.method = extra.method;
 
-console.log(opts);
     var req = new Req(opts);
     var ws = req.duplex && through();
     if (ws) ws.pause();
@@ -5603,16 +5594,13 @@ console.log(opts);
     dup.on('close', function () { closed = true });
 
     process.nextTick(function () {
-      console.log('back');
         if (closed) return;
         dup.on('close', function () { r.destroy() });
-console.log('wheee');
+
         var r = req._send();
         r.on('error', bind(dup, dup.emit, 'error'));
 
-console.log('hey');
         r.on('response', function (res) {
-          console.log('response!');
             dup.response = res;
             dup.emit('response', res);
             if (req.duplex) res.pipe(rs)
@@ -5622,21 +5610,17 @@ console.log('hey');
             }
         });
 
-console.log('xxx', req.duplex);
         if (req.duplex) {
             ws.pipe(r);
             ws.resume();
         }
         else r.end();
-console.log('mmm');
     });
 
     if (cb) {
-console.log('ddd');
         dup.on('error', cb);
         dup.on('response', bind(dup, cb, null));
     }
-console.log('rrr');
     return dup;
 }
 
@@ -5661,7 +5645,7 @@ function Req (opts) {
     this.method = method;
     this.duplex = !(method === 'GET' || method === 'DELETE');
     this.auth = opts.auth;
-console.log(opts.uri);
+
     if (opts.uri) this.setLocation(opts.uri);
 }
 
@@ -5669,26 +5653,16 @@ Req.prototype._send = function () {
     this._sent = true;
 
     var headers = this.headers || {};
-// parse occurs here
     var u = url.parse(this.uri);
     var au = u.auth || this.auth;
     if (au) {
         headers.authorization = 'Basic ' + Buffer(au).toString('base64');
     }
 
-    var protocol = u.protocol;
-    console.log(protocol);
+    var protocol = u.protocol || '';
     var interface = (protocol === 'https:') ? https : http;
-console.log('params', {
-    method: this.method,
-    host: u.hostname,
-    port: Number(u.port),
-    path: u.path,
-    agent: false,
-    headers: headers
-});
     var req = interface.request({
-        // scheme: protocol ? protocol.slice(0, -1) : null,
+        scheme: protocol.slice(0, -1),
         method: this.method,
         host: u.hostname,
         port: Number(u.port),
@@ -5713,7 +5687,7 @@ Req.prototype.setLocation = function (uri) {
 };
 
 })(require("__browserify_process"),require("__browserify_buffer").Buffer)
-},{"url":3,"http":9,"https":8,"stream":5,"through":13,"duplexer":14,"__browserify_process":10,"__browserify_buffer":12}],13:[function(require,module,exports){
+},{"url":3,"http":6,"https":5,"stream":7,"through":13,"duplexer":14,"__browserify_process":10,"__browserify_buffer":12}],13:[function(require,module,exports){
 (function(process){var Stream = require('stream')
 
 // through
@@ -5819,7 +5793,7 @@ function through (write, end) {
 
 
 })(require("__browserify_process"))
-},{"stream":5,"__browserify_process":10}],14:[function(require,module,exports){
+},{"stream":7,"__browserify_process":10}],14:[function(require,module,exports){
 var Stream = require("stream")
 var writeMethods = ["write", "end", "destroy"]
 var readMethods = ["resume", "pause"]
@@ -5908,7 +5882,7 @@ function duplex(writer, reader) {
     }
 }
 
-},{"stream":5}],15:[function(require,module,exports){
+},{"stream":7}],15:[function(require,module,exports){
 (function(){// UTILITY
 var util = require('util');
 var Buffer = require("buffer").Buffer;
@@ -6225,7 +6199,7 @@ assert.doesNotThrow = function(block, /*optional*/error, /*optional*/message) {
 assert.ifError = function(err) { if (err) {throw err;}};
 
 })()
-},{"util":7,"buffer":16}],17:[function(require,module,exports){
+},{"util":9,"buffer":16}],17:[function(require,module,exports){
 var Stream = require('stream');
 
 var Response = module.exports = function (res) {
@@ -6246,13 +6220,13 @@ function parseHeaders (res) {
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
         if (line === '') continue;
-
+        
         var m = line.match(/^([^:]+):\s*(.*)/);
         if (m) {
             var key = m[1].toLowerCase(), value = m[2];
-
+            
             if (headers[key] !== undefined) {
-
+            
                 if (isArray(headers[key])) {
                     headers[key].push(value);
                 }
@@ -6291,7 +6265,7 @@ Response.prototype.handle = function (res) {
         catch (err) {
             capable.status2 = false;
         }
-
+        
         if (capable.status2) {
             this.emit('ready');
         }
@@ -6305,7 +6279,7 @@ Response.prototype.handle = function (res) {
             }
         }
         catch (err) {}
-
+        
         try {
             this._emitData(res);
         }
@@ -6319,12 +6293,12 @@ Response.prototype.handle = function (res) {
             this.emit('ready');
         }
         this._emitData(res);
-
+        
         if (res.error) {
             this.emit('error', this.getResponse(res));
         }
         else this.emit('end');
-
+        
         this.emit('close');
     }
 };
@@ -6346,7 +6320,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{"stream":5}],18:[function(require,module,exports){
+},{"stream":7}],18:[function(require,module,exports){
 exports.readIEEE754 = function(buffer, offset, isBE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -7760,7 +7734,7 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 
 	function b64ToByteArray(b64) {
 		var i, j, l, tmp, placeHolders, arr;
-
+	
 		if (b64.length % 4 > 0) {
 			throw 'Invalid string. Length must be a multiple of 4';
 		}
@@ -7849,20 +7823,18 @@ var Request = module.exports = function (xhr, params) {
     self.writable = true;
     self.xhr = xhr;
     self.body = concatStream()
-
+    
     var uri = params.host
         + (params.port ? ':' + params.port : '')
         + (params.path || '/')
     ;
-console.log(
-        (params.scheme || 'http') + '://' + uri);
+    
     xhr.open(
         params.method || 'GET',
-        // (params.scheme || 'http') + '://' + uri,
-        ('http') + '://' + uri,
+        (params.scheme || 'http') + '://' + uri,
         true
     );
-
+    
     if (params.headers) {
         var keys = objectKeys(params.headers);
         for (var i = 0; i < keys.length; i++) {
@@ -7877,7 +7849,7 @@ console.log(
             else xhr.setRequestHeader(key, value)
         }
     }
-
+    
     if (params.auth) {
         //basic auth
         this.setHeader('Authorization', 'Basic ' + new Buffer(params.auth).toString('base64'));
@@ -7887,11 +7859,11 @@ console.log(
     res.on('close', function () {
         self.emit('close');
     });
-
+    
     res.on('ready', function () {
         self.emit('response', res);
     });
-
+    
     xhr.onreadystatechange = function () {
         res.handle(xhr);
     };
@@ -7974,7 +7946,7 @@ var indexOf = function (xs, x) {
 };
 
 })()
-},{"stream":5,"buffer":16,"./response":17,"concat-stream":20}],20:[function(require,module,exports){
+},{"stream":7,"buffer":16,"./response":17,"concat-stream":20}],20:[function(require,module,exports){
 (function(Buffer){var stream = require('stream')
 var util = require('util')
 
@@ -8025,5 +7997,5 @@ module.exports = function(cb) {
 module.exports.ConcatStream = ConcatStream
 
 })(require("__browserify_buffer").Buffer)
-},{"stream":5,"util":7,"__browserify_buffer":12}]},{},[1])
+},{"stream":7,"util":9,"__browserify_buffer":12}]},{},[1])
 ;
