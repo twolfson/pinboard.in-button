@@ -830,7 +830,7 @@ exports.parse = function(str){
   return String(str)
     .split('&')
     .reduce(function(ret, pair){
-      try{ 
+      try{
         pair = decodeURIComponent(pair.replace(/\+/g, ' '));
       } catch(e) {
         // ignore
@@ -1027,6 +1027,7 @@ function lastBraceInKey(str) {
 var process = module.exports = {};
 
 process.nextTick = (function () {
+  console.log('heyyy');
     var canSetImmediate = typeof window !== 'undefined'
     && window.setImmediate;
     var canPost = typeof window !== 'undefined'
@@ -1042,6 +1043,7 @@ process.nextTick = (function () {
         window.addEventListener('message', function (ev) {
             var source = ev.source;
             if ((source === window || source === null) && ev.data === 'process-tick') {
+              console.log('cbb');
                 ev.stopPropagation();
                 if (queue.length > 0) {
                     var fn = queue.shift();
@@ -1625,7 +1627,7 @@ http.request = function (params, cb) {
     if (!params.host) params.host = window.location.host.split(':')[0];
     if (!params.port) params.port = window.location.port;
     if (!params.scheme) params.scheme = window.location.protocol.split(':')[0];
-    
+
     var req = new Request(new xhrHttp, params);
     if (cb) req.on('response', cb);
     return req;
@@ -3764,7 +3766,7 @@ exports.format = function(f) {
 
 	function b64ToByteArray(b64) {
 		var i, j, l, tmp, placeHolders, arr;
-	
+
 		if (b64.length % 4 > 0) {
 			throw 'Invalid string. Length must be a multiple of 4';
 		}
@@ -3947,6 +3949,7 @@ process.nextTick = (function () {
     if (canPost) {
         var queue = [];
         window.addEventListener('message', function (ev) {
+          console.log('balls');
             if (ev.source === window && ev.data === 'process-tick') {
                 ev.stopPropagation();
                 if (queue.length > 0) {
@@ -5461,7 +5464,7 @@ SlowBuffer.prototype.writeDoubleBE = Buffer.prototype.writeDoubleBE;
 
 	function b64ToByteArray(b64) {
 		var i, j, l, tmp, placeHolders, arr;
-	
+
 		if (b64.length % 4 > 0) {
 			throw 'Invalid string. Length must be a multiple of 4';
 		}
@@ -5573,12 +5576,12 @@ function hyperquest (uri, opts, cb, extra) {
     if (!opts) opts = {};
     if (uri !== undefined) opts.uri = uri;
     if (extra) opts.method = extra.method;
-    
+
     var req = new Req(opts);
     var ws = req.duplex && through();
     if (ws) ws.pause();
     var rs = through();
-    
+
     var dup = req.duplex ? duplexer(ws, rs) : rs;
     if (!req.duplex) {
         rs.writable = false;
@@ -5586,17 +5589,17 @@ function hyperquest (uri, opts, cb, extra) {
     dup.request = req;
     dup.setHeader = bind(req, req.setHeader);
     dup.setLocation = bind(req, req.setLocation);
-    
+
     var closed = false;
     dup.on('close', function () { closed = true });
-    
+
     process.nextTick(function () {
         if (closed) return;
         dup.on('close', function () { r.destroy() });
-        
+
         var r = req._send();
         r.on('error', bind(dup, dup.emit, 'error'));
-        
+
         r.on('response', function (res) {
             dup.response = res;
             dup.emit('response', res);
@@ -5606,14 +5609,14 @@ function hyperquest (uri, opts, cb, extra) {
                 res.on('end', function () { rs.queue(null) });
             }
         });
-        
+
         if (req.duplex) {
             ws.pipe(r);
             ws.resume();
         }
         else r.end();
     });
-    
+
     if (cb) {
         dup.on('error', cb);
         dup.on('response', bind(dup, cb, null));
@@ -5637,25 +5640,25 @@ hyperquest['delete'] = function (uri, opts, cb) {
 
 function Req (opts) {
     this.headers = opts.headers || {};
-    
+
     var method = (opts.method || 'GET').toUpperCase();
     this.method = method;
     this.duplex = !(method === 'GET' || method === 'DELETE');
     this.auth = opts.auth;
-    
+
     if (opts.uri) this.setLocation(opts.uri);
 }
 
 Req.prototype._send = function () {
     this._sent = true;
-    
+
     var headers = this.headers || {};
     var u = url.parse(this.uri);
     var au = u.auth || this.auth;
     if (au) {
         headers.authorization = 'Basic ' + Buffer(au).toString('base64');
     }
-    
+
     var interface = (u.protocol === 'https:') ? https : http;
     var req = interface.request({
         method: this.method,
@@ -5665,7 +5668,7 @@ Req.prototype._send = function () {
         agent: false,
         headers: headers
     });
-    
+
     if (req.setTimeout) req.setTimeout(Math.pow(2, 32) * 1000);
     return req;
 };
@@ -6215,13 +6218,13 @@ function parseHeaders (res) {
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
         if (line === '') continue;
-        
+
         var m = line.match(/^([^:]+):\s*(.*)/);
         if (m) {
             var key = m[1].toLowerCase(), value = m[2];
-            
+
             if (headers[key] !== undefined) {
-            
+
                 if (isArray(headers[key])) {
                     headers[key].push(value);
                 }
@@ -6260,7 +6263,7 @@ Response.prototype.handle = function (res) {
         catch (err) {
             capable.status2 = false;
         }
-        
+
         if (capable.status2) {
             this.emit('ready');
         }
@@ -6274,7 +6277,7 @@ Response.prototype.handle = function (res) {
             }
         }
         catch (err) {}
-        
+
         try {
             this._emitData(res);
         }
@@ -6288,12 +6291,12 @@ Response.prototype.handle = function (res) {
             this.emit('ready');
         }
         this._emitData(res);
-        
+
         if (res.error) {
             this.emit('error', this.getResponse(res));
         }
         else this.emit('end');
-        
+
         this.emit('close');
     }
 };
@@ -7732,18 +7735,18 @@ var Request = module.exports = function (xhr, params) {
     self.writable = true;
     self.xhr = xhr;
     self.body = concatStream()
-    
+
     var uri = params.host
         + (params.port ? ':' + params.port : '')
         + (params.path || '/')
     ;
-    
+
     xhr.open(
         params.method || 'GET',
         (params.scheme || 'http') + '://' + uri,
         true
     );
-    
+
     if (params.headers) {
         var keys = objectKeys(params.headers);
         for (var i = 0; i < keys.length; i++) {
@@ -7758,7 +7761,7 @@ var Request = module.exports = function (xhr, params) {
             else xhr.setRequestHeader(key, value)
         }
     }
-    
+
     if (params.auth) {
         //basic auth
         this.setHeader('Authorization', 'Basic ' + new Buffer(params.auth).toString('base64'));
@@ -7768,11 +7771,11 @@ var Request = module.exports = function (xhr, params) {
     res.on('close', function () {
         self.emit('close');
     });
-    
+
     res.on('ready', function () {
         self.emit('response', res);
     });
-    
+
     xhr.onreadystatechange = function () {
         res.handle(xhr);
     };
@@ -7863,7 +7866,7 @@ var indexOf = function (xs, x) {
 
 	function b64ToByteArray(b64) {
 		var i, j, l, tmp, placeHolders, arr;
-	
+
 		if (b64.length % 4 > 0) {
 			throw 'Invalid string. Length must be a multiple of 4';
 		}
