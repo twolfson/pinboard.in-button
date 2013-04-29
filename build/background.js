@@ -11,7 +11,8 @@ var hyperquest = require('hyperquest');
 hyperquest.get({
   // scheme: 'http',
   // host: 'google.com'
-  uri: 'http://google.com/'
+  // uri: 'http://google.com/'
+  uri: 'http://google.com:80/'
 }, function (err, res) {
   console.log('zzz');
 });
@@ -1630,7 +1631,7 @@ http.request = function (params, cb) {
     if (!params.host) params.host = window.location.host.split(':')[0];
     if (!params.port) params.port = window.location.port;
     if (!params.scheme) params.scheme = window.location.protocol.split(':')[0];
-
+console.log('more params', params);
     var req = new Request(new xhrHttp, params);
     if (cb) req.on('response', cb);
     return req;
@@ -5670,6 +5671,14 @@ Req.prototype._send = function () {
     }
 
     var interface = (u.protocol === 'https:') ? https : http;
+console.log('params', {
+    method: this.method,
+    host: u.hostname,
+    port: Number(u.port),
+    path: u.path,
+    agent: false,
+    headers: headers
+});
     var req = interface.request({
         method: this.method,
         host: u.hostname,
@@ -7836,10 +7845,12 @@ var Request = module.exports = function (xhr, params) {
         + (params.port ? ':' + params.port : '')
         + (params.path || '/')
     ;
-
+console.log(
+        (params.scheme || 'http') + '://' + uri);
     xhr.open(
         params.method || 'GET',
-        (params.scheme || 'http') + '://' + uri,
+        // (params.scheme || 'http') + '://' + uri,
+        ('http') + '://' + uri,
         true
     );
 
