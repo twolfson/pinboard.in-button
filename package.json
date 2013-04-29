@@ -26,7 +26,8 @@
     "node": ">= 0.6.0"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "build": "node ./node_modules/browserify/bin/cmd.js lib/background.mustache.js -o build/background.js"
   },
   "dependencies": {
     "hyperquest": "git://github.com/twolfson/hyperquest.git#bug/cannot.use.alternative.protocols"

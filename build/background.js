@@ -1,5 +1,5 @@
 ;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
-(function(){/************************************************************************************
+/************************************************************************************
   This is your background code.
   For more information please visit our wiki site:
   http://docs.crossrider.com/#!/guide/background_scope
@@ -12,10 +12,8 @@ hyperquest.get({
   uri: 'http://google.com/'
 }, function (err, res) {
   console.log(res);
+  res.on('data', console.log);
 });
-// process.nextTick(function () {
-//   console.log(1);
-// });
 
 // BUTTON CODE
 var button = appAPI.browserAction;
@@ -30,22 +28,7 @@ button.onClick(function (e) {
 
   appAPI.message.toActiveTab('yo dawg');
 });
-})()
 },{"hyperquest":2}],3:[function(require,module,exports){
-var http = require('http');
-
-var https = module.exports;
-
-for (var key in http) {
-    if (http.hasOwnProperty(key)) https[key] = http[key];
-};
-
-https.request = function (params, cb) {
-    if (!params) params = {};
-    params.scheme = 'https';
-    return http.request.call(this, params, cb);
-}
-},{"http":4}],5:[function(require,module,exports){
 var punycode = { encode : function (s) { return s } };
 
 exports.parse = urlParse;
@@ -651,7 +634,21 @@ function parseHost(host) {
   return out;
 }
 
-},{"querystring":6}],7:[function(require,module,exports){
+},{"querystring":4}],5:[function(require,module,exports){
+var http = require('http');
+
+var https = module.exports;
+
+for (var key in http) {
+    if (http.hasOwnProperty(key)) https[key] = http[key];
+};
+
+https.request = function (params, cb) {
+    if (!params) params = {};
+    params.scheme = 'https';
+    return http.request.call(this, params, cb);
+}
+},{"http":6}],7:[function(require,module,exports){
 var events = require('events');
 var util = require('util');
 
@@ -1013,7 +1010,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":10}],6:[function(require,module,exports){
+},{"__browserify_process":10}],4:[function(require,module,exports){
 var isArray = typeof Array.isArray === 'function'
     ? Array.isArray
     : function (xs) {
@@ -1618,7 +1615,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":8}],4:[function(require,module,exports){
+},{"events":8}],6:[function(require,module,exports){
 var http = module.exports;
 var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
@@ -5687,7 +5684,7 @@ Req.prototype.setLocation = function (uri) {
 };
 
 })(require("__browserify_process"),require("__browserify_buffer").Buffer)
-},{"url":5,"http":4,"https":3,"stream":7,"through":13,"duplexer":14,"__browserify_process":10,"__browserify_buffer":12}],13:[function(require,module,exports){
+},{"url":3,"http":6,"https":5,"stream":7,"through":13,"duplexer":14,"__browserify_process":10,"__browserify_buffer":12}],13:[function(require,module,exports){
 (function(process){var Stream = require('stream')
 
 // through
