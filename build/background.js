@@ -9,8 +9,9 @@ var app = appAPI;
 
 var hyperquest = require('hyperquest');
 hyperquest.get({
-  scheme: 'http',
-  host: 'google.com'
+  // scheme: 'http',
+  // host: 'google.com'
+  uri: 'http://google.com/'
 }, function (err, res) {
   console.log('zzz');
 });
@@ -5578,6 +5579,7 @@ function hyperquest (uri, opts, cb, extra) {
     if (uri !== undefined) opts.uri = uri;
     if (extra) opts.method = extra.method;
 
+console.log(opts);
     var req = new Req(opts);
     var ws = req.duplex && through();
     if (ws) ws.pause();
@@ -5604,7 +5606,7 @@ console.log('wheee');
 
 console.log('hey');
         r.on('response', function (res) {
-          console.log(res);
+          console.log('response!');
             dup.response = res;
             dup.emit('response', res);
             if (req.duplex) res.pipe(rs)
@@ -5653,7 +5655,7 @@ function Req (opts) {
     this.method = method;
     this.duplex = !(method === 'GET' || method === 'DELETE');
     this.auth = opts.auth;
-
+console.log(opts.uri);
     if (opts.uri) this.setLocation(opts.uri);
 }
 
