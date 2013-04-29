@@ -11,9 +11,11 @@ var hyperquest = require('hyperquest');
 hyperquest.get({
   // scheme: 'http',
   // host: 'google.com'
-  // uri: 'http://google.com/'
+  // uri: 'chrome://google.com/'
+  uri: 'http://google.com/'
+  // uri: 'https://google.com/'
   // uri: 'http://google.com:80/'
-  uri: 'https://google.com:80/'
+  // uri: 'https://google.com:80/'
 }, function (err, res) {
   console.log('zzz');
 });
@@ -5666,13 +5668,15 @@ Req.prototype._send = function () {
     this._sent = true;
 
     var headers = this.headers || {};
+// parse occurs here
     var u = url.parse(this.uri);
     var au = u.auth || this.auth;
     if (au) {
         headers.authorization = 'Basic ' + Buffer(au).toString('base64');
     }
 
-    var interface = (u.protocol === 'https:') ? https : http;
+    var protocol = u.protocol;
+    var interface = (protocol === 'https:') ? https : http;
 console.log('params', {
     method: this.method,
     host: u.hostname,
@@ -5682,6 +5686,7 @@ console.log('params', {
     headers: headers
 });
     var req = interface.request({
+        scheme: protocol ? protocol.slice(0, -1) : null,
         method: this.method,
         host: u.hostname,
         port: Number(u.port),
