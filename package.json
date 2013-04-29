@@ -27,8 +27,8 @@
   },
   "scripts": {
     "test": "grunt test",
-    "build-background": "node ./node_modules/browserify/bin/cmd.js lib/background.mustache.js -o build/background.js",
-    "build-extension": "node ./node_modules/browserify/bin/cmd.js lib/extension.mustache.js -o build/extension.js",
+    "build-background": "node ./node_modules/browserify/bin/cmd.js lib/background.js -o build/background.js",
+    "build-extension": "node ./node_modules/browserify/bin/cmd.js lib/extension.js -o build/extension.js",
     "build": "npm run-script build-background && npm run-script build-extension"
   },
   "dependencies": {
