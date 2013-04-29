@@ -12,7 +12,8 @@ hyperquest.get({
   // scheme: 'http',
   // host: 'google.com'
   // uri: 'http://google.com/'
-  uri: 'http://google.com:80/'
+  // uri: 'http://google.com:80/'
+  uri: 'https://google.com:80/'
 }, function (err, res) {
   console.log('zzz');
 });
@@ -1627,6 +1628,7 @@ var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
 
 http.request = function (params, cb) {
+console.log('pre-params', JSON.stringify(params));
     if (!params) params = {};
     if (!params.host) params.host = window.location.host.split(':')[0];
     if (!params.port) params.port = window.location.port;
