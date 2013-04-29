@@ -45,6 +45,14 @@ module.exports = function(grunt) {
       }
     },
 
+    browserify: {
+      background: {
+        src: 'lib/background.mustache.js',
+        dist: 'build/background.js',
+        options: {}
+      }
+    },
+
     // Serving files
     server: {
       base: 'build/',
@@ -95,6 +103,9 @@ module.exports = function(grunt) {
 
   // Load in templater
   grunt.loadNpmTasks('grunt-templater');
+
+  // Load in browserify
+  grunt.loadNpmTasks('grunt-browserify');
 
   // Add a build task
   grunt.registerTask('build', 'template');
