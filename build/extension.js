@@ -52,13 +52,14 @@
 
 var a = '1';
 appAPI.ready(function($) {
-var x = XMLHttpRequest();
-x.open('GET', 'http://localhost:3000/extension.js');
-x.onreadystatechange = function () {
-  console.log(x.responseText);
-};
+// var x = XMLHttpRequest();
+// x.open('GET', 'http://localhost:3000/extension.js', true);
+// x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+// x.onreadystatechange = function () {
+//   console.log(x.responseText);
+// };
 
-x.send();
+// x.send();
   var a = a || '3';
   console.log('aaa', a);
   // // TODO: Add `data` to getFn
