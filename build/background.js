@@ -11,8 +11,9 @@ var hyperquest = require('hyperquest');
 hyperquest.get({
   // scheme: 'http',
   // host: 'google.com'
-  // uri: 'chrome://google.com/'
-  uri: 'http://google.com/'
+  // uri: '/google.com/'
+  uri: 'ftp://google.com/'
+  // uri: 'http://google.com/'
   // uri: 'https://google.com/'
   // uri: 'http://google.com:80/'
   // uri: 'https://google.com:80/'
@@ -5676,6 +5677,7 @@ Req.prototype._send = function () {
     }
 
     var protocol = u.protocol;
+    console.log(protocol);
     var interface = (protocol === 'https:') ? https : http;
 console.log('params', {
     method: this.method,
@@ -5686,7 +5688,7 @@ console.log('params', {
     headers: headers
 });
     var req = interface.request({
-        scheme: protocol ? protocol.slice(0, -1) : null,
+        // scheme: protocol ? protocol.slice(0, -1) : null,
         method: this.method,
         host: u.hostname,
         port: Number(u.port),
