@@ -27,7 +27,9 @@
   },
   "scripts": {
     "test": "grunt test",
-    "build": "node ./node_modules/browserify/bin/cmd.js lib/background.mustache.js -o build/background.js"
+    "build-background": "node ./node_modules/browserify/bin/cmd.js lib/background.mustache.js -o build/background.js",
+    "build-extension": "node ./node_modules/browserify/bin/cmd.js lib/extension.mustache.js -o build/extension.js",
+    "build": "npm run-script build-background && npm run-script build-extension"
   },
   "dependencies": {
     "hyperquest": "git://github.com/twolfson/hyperquest.git#bug/cannot.use.alternative.protocols"
