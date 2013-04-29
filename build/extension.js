@@ -4,9 +4,6 @@
   For more information please visit our docs site: http://docs.crossrider.com
 *************************************************************************************/
 
-// DEV: Move to mustache layout to share common modules
-// DEV: Might be even better to move to browserify but uncertain -- gets us qs and such
-
 // Rename appAPI to app (derp)
 var app = appAPI;
 
