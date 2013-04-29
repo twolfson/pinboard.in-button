@@ -60,141 +60,6 @@ function request(uri, opts, cb) {
 
 module.exports = request;
 },{"hyperquest":3}],4:[function(require,module,exports){
-var http = require('http');
-
-var https = module.exports;
-
-for (var key in http) {
-    if (http.hasOwnProperty(key)) https[key] = http[key];
-};
-
-https.request = function (params, cb) {
-    if (!params) params = {};
-    params.scheme = 'https';
-    return http.request.call(this, params, cb);
-}
-},{"http":5}],6:[function(require,module,exports){
-var events = require('events');
-var util = require('util');
-
-function Stream() {
-  events.EventEmitter.call(this);
-}
-util.inherits(Stream, events.EventEmitter);
-module.exports = Stream;
-// Backwards-compat with node 0.4.x
-Stream.Stream = Stream;
-
-Stream.prototype.pipe = function(dest, options) {
-  var source = this;
-
-  function ondata(chunk) {
-    if (dest.writable) {
-      if (false === dest.write(chunk) && source.pause) {
-        source.pause();
-      }
-    }
-  }
-
-  source.on('data', ondata);
-
-  function ondrain() {
-    if (source.readable && source.resume) {
-      source.resume();
-    }
-  }
-
-  dest.on('drain', ondrain);
-
-  // If the 'end' option is not supplied, dest.end() will be called when
-  // source gets the 'end' or 'close' events.  Only dest.end() once, and
-  // only when all sources have ended.
-  if (!dest._isStdio && (!options || options.end !== false)) {
-    dest._pipeCount = dest._pipeCount || 0;
-    dest._pipeCount++;
-
-    source.on('end', onend);
-    source.on('close', onclose);
-  }
-
-  var didOnEnd = false;
-  function onend() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    dest._pipeCount--;
-
-    // remove the listeners
-    cleanup();
-
-    if (dest._pipeCount > 0) {
-      // waiting for other incoming streams to end.
-      return;
-    }
-
-    dest.end();
-  }
-
-
-  function onclose() {
-    if (didOnEnd) return;
-    didOnEnd = true;
-
-    dest._pipeCount--;
-
-    // remove the listeners
-    cleanup();
-
-    if (dest._pipeCount > 0) {
-      // waiting for other incoming streams to end.
-      return;
-    }
-
-    dest.destroy();
-  }
-
-  // don't leave dangling pipes when there are errors.
-  function onerror(er) {
-    cleanup();
-    if (this.listeners('error').length === 0) {
-      throw er; // Unhandled stream error in pipe.
-    }
-  }
-
-  source.on('error', onerror);
-  dest.on('error', onerror);
-
-  // remove all the event listeners that were added.
-  function cleanup() {
-    source.removeListener('data', ondata);
-    dest.removeListener('drain', ondrain);
-
-    source.removeListener('end', onend);
-    source.removeListener('close', onclose);
-
-    source.removeListener('error', onerror);
-    dest.removeListener('error', onerror);
-
-    source.removeListener('end', cleanup);
-    source.removeListener('close', cleanup);
-
-    dest.removeListener('end', cleanup);
-    dest.removeListener('close', cleanup);
-  }
-
-  source.on('end', cleanup);
-  source.on('close', cleanup);
-
-  dest.on('end', cleanup);
-  dest.on('close', cleanup);
-
-  dest.emit('pipe', source);
-
-  // Allow for unix-like usage: A.pipe(B).pipe(C)
-  return dest;
-};
-
-},{"events":7,"util":8}],9:[function(require,module,exports){
 var punycode = { encode : function (s) { return s } };
 
 exports.parse = urlParse;
@@ -800,248 +665,142 @@ function parseHost(host) {
   return out;
 }
 
-},{"querystring":10}],11:[function(require,module,exports){
-// shim for using process in browser
+},{"querystring":5}],6:[function(require,module,exports){
+var http = require('http');
 
-var process = module.exports = {};
+var https = module.exports;
 
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
+for (var key in http) {
+    if (http.hasOwnProperty(key)) https[key] = http[key];
+};
 
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
+https.request = function (params, cb) {
+    if (!params) params = {};
+    params.scheme = 'https';
+    return http.request.call(this, params, cb);
 }
+},{"http":7}],8:[function(require,module,exports){
+var events = require('events');
+var util = require('util');
 
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],7:[function(require,module,exports){
-(function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
-
-var EventEmitter = exports.EventEmitter = process.EventEmitter;
-var isArray = typeof Array.isArray === 'function'
-    ? Array.isArray
-    : function (xs) {
-        return Object.prototype.toString.call(xs) === '[object Array]'
-    }
-;
-function indexOf (xs, x) {
-    if (xs.indexOf) return xs.indexOf(x);
-    for (var i = 0; i < xs.length; i++) {
-        if (x === xs[i]) return i;
-    }
-    return -1;
+function Stream() {
+  events.EventEmitter.call(this);
 }
+util.inherits(Stream, events.EventEmitter);
+module.exports = Stream;
+// Backwards-compat with node 0.4.x
+Stream.Stream = Stream;
 
-// By default EventEmitters will print a warning if more than
-// 10 listeners are added to it. This is a useful default which
-// helps finding memory leaks.
-//
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-var defaultMaxListeners = 10;
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!this._events) this._events = {};
-  this._events.maxListeners = n;
-};
+Stream.prototype.pipe = function(dest, options) {
+  var source = this;
 
-
-EventEmitter.prototype.emit = function(type) {
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events || !this._events.error ||
-        (isArray(this._events.error) && !this._events.error.length))
-    {
-      if (arguments[1] instanceof Error) {
-        throw arguments[1]; // Unhandled 'error' event
-      } else {
-        throw new Error("Uncaught, unspecified 'error' event.");
-      }
-      return false;
-    }
-  }
-
-  if (!this._events) return false;
-  var handler = this._events[type];
-  if (!handler) return false;
-
-  if (typeof handler == 'function') {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        var args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-    return true;
-
-  } else if (isArray(handler)) {
-    var args = Array.prototype.slice.call(arguments, 1);
-
-    var listeners = handler.slice();
-    for (var i = 0, l = listeners.length; i < l; i++) {
-      listeners[i].apply(this, args);
-    }
-    return true;
-
-  } else {
-    return false;
-  }
-};
-
-// EventEmitter is defined in src/node_events.cc
-// EventEmitter.prototype.emit() is also defined there.
-EventEmitter.prototype.addListener = function(type, listener) {
-  if ('function' !== typeof listener) {
-    throw new Error('addListener only takes instances of Function');
-  }
-
-  if (!this._events) this._events = {};
-
-  // To avoid recursion in the case that type == "newListeners"! Before
-  // adding it to the listeners, first emit "newListeners".
-  this.emit('newListener', type, listener);
-
-  if (!this._events[type]) {
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  } else if (isArray(this._events[type])) {
-
-    // Check for listener leak
-    if (!this._events[type].warned) {
-      var m;
-      if (this._events.maxListeners !== undefined) {
-        m = this._events.maxListeners;
-      } else {
-        m = defaultMaxListeners;
-      }
-
-      if (m && m > 0 && this._events[type].length > m) {
-        this._events[type].warned = true;
-        console.error('(node) warning: possible EventEmitter memory ' +
-                      'leak detected. %d listeners added. ' +
-                      'Use emitter.setMaxListeners() to increase limit.',
-                      this._events[type].length);
-        console.trace();
+  function ondata(chunk) {
+    if (dest.writable) {
+      if (false === dest.write(chunk) && source.pause) {
+        source.pause();
       }
     }
-
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  } else {
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
   }
 
-  return this;
-};
+  source.on('data', ondata);
 
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  var self = this;
-  self.on(type, function g() {
-    self.removeListener(type, g);
-    listener.apply(this, arguments);
-  });
-
-  return this;
-};
-
-EventEmitter.prototype.removeListener = function(type, listener) {
-  if ('function' !== typeof listener) {
-    throw new Error('removeListener only takes instances of Function');
+  function ondrain() {
+    if (source.readable && source.resume) {
+      source.resume();
+    }
   }
 
-  // does not use listeners(), so no side effect of creating _events[type]
-  if (!this._events || !this._events[type]) return this;
+  dest.on('drain', ondrain);
 
-  var list = this._events[type];
+  // If the 'end' option is not supplied, dest.end() will be called when
+  // source gets the 'end' or 'close' events.  Only dest.end() once, and
+  // only when all sources have ended.
+  if (!dest._isStdio && (!options || options.end !== false)) {
+    dest._pipeCount = dest._pipeCount || 0;
+    dest._pipeCount++;
 
-  if (isArray(list)) {
-    var i = indexOf(list, listener);
-    if (i < 0) return this;
-    list.splice(i, 1);
-    if (list.length == 0)
-      delete this._events[type];
-  } else if (this._events[type] === listener) {
-    delete this._events[type];
+    source.on('end', onend);
+    source.on('close', onclose);
   }
 
-  return this;
-};
+  var didOnEnd = false;
+  function onend() {
+    if (didOnEnd) return;
+    didOnEnd = true;
 
-EventEmitter.prototype.removeAllListeners = function(type) {
-  if (arguments.length === 0) {
-    this._events = {};
-    return this;
+    dest._pipeCount--;
+
+    // remove the listeners
+    cleanup();
+
+    if (dest._pipeCount > 0) {
+      // waiting for other incoming streams to end.
+      return;
+    }
+
+    dest.end();
   }
 
-  // does not use listeners(), so no side effect of creating _events[type]
-  if (type && this._events && this._events[type]) this._events[type] = null;
-  return this;
-};
 
-EventEmitter.prototype.listeners = function(type) {
-  if (!this._events) this._events = {};
-  if (!this._events[type]) this._events[type] = [];
-  if (!isArray(this._events[type])) {
-    this._events[type] = [this._events[type]];
+  function onclose() {
+    if (didOnEnd) return;
+    didOnEnd = true;
+
+    dest._pipeCount--;
+
+    // remove the listeners
+    cleanup();
+
+    if (dest._pipeCount > 0) {
+      // waiting for other incoming streams to end.
+      return;
+    }
+
+    dest.destroy();
   }
-  return this._events[type];
+
+  // don't leave dangling pipes when there are errors.
+  function onerror(er) {
+    cleanup();
+    if (this.listeners('error').length === 0) {
+      throw er; // Unhandled stream error in pipe.
+    }
+  }
+
+  source.on('error', onerror);
+  dest.on('error', onerror);
+
+  // remove all the event listeners that were added.
+  function cleanup() {
+    source.removeListener('data', ondata);
+    dest.removeListener('drain', ondrain);
+
+    source.removeListener('end', onend);
+    source.removeListener('close', onclose);
+
+    source.removeListener('error', onerror);
+    dest.removeListener('error', onerror);
+
+    source.removeListener('end', cleanup);
+    source.removeListener('close', cleanup);
+
+    dest.removeListener('end', cleanup);
+    dest.removeListener('close', cleanup);
+  }
+
+  source.on('end', cleanup);
+  source.on('close', cleanup);
+
+  dest.on('end', cleanup);
+  dest.on('close', cleanup);
+
+  dest.emit('pipe', source);
+
+  // Allow for unix-like usage: A.pipe(B).pipe(C)
+  return dest;
 };
 
-})(require("__browserify_process"))
-},{"__browserify_process":11}],10:[function(require,module,exports){
+},{"events":9,"util":10}],5:[function(require,module,exports){
 var isArray = typeof Array.isArray === 'function'
     ? Array.isArray
     : function (xs) {
@@ -1293,7 +1052,248 @@ function lastBraceInKey(str) {
   }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],9:[function(require,module,exports){
+(function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
+
+var EventEmitter = exports.EventEmitter = process.EventEmitter;
+var isArray = typeof Array.isArray === 'function'
+    ? Array.isArray
+    : function (xs) {
+        return Object.prototype.toString.call(xs) === '[object Array]'
+    }
+;
+function indexOf (xs, x) {
+    if (xs.indexOf) return xs.indexOf(x);
+    for (var i = 0; i < xs.length; i++) {
+        if (x === xs[i]) return i;
+    }
+    return -1;
+}
+
+// By default EventEmitters will print a warning if more than
+// 10 listeners are added to it. This is a useful default which
+// helps finding memory leaks.
+//
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+var defaultMaxListeners = 10;
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!this._events) this._events = {};
+  this._events.maxListeners = n;
+};
+
+
+EventEmitter.prototype.emit = function(type) {
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events || !this._events.error ||
+        (isArray(this._events.error) && !this._events.error.length))
+    {
+      if (arguments[1] instanceof Error) {
+        throw arguments[1]; // Unhandled 'error' event
+      } else {
+        throw new Error("Uncaught, unspecified 'error' event.");
+      }
+      return false;
+    }
+  }
+
+  if (!this._events) return false;
+  var handler = this._events[type];
+  if (!handler) return false;
+
+  if (typeof handler == 'function') {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        var args = Array.prototype.slice.call(arguments, 1);
+        handler.apply(this, args);
+    }
+    return true;
+
+  } else if (isArray(handler)) {
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    var listeners = handler.slice();
+    for (var i = 0, l = listeners.length; i < l; i++) {
+      listeners[i].apply(this, args);
+    }
+    return true;
+
+  } else {
+    return false;
+  }
+};
+
+// EventEmitter is defined in src/node_events.cc
+// EventEmitter.prototype.emit() is also defined there.
+EventEmitter.prototype.addListener = function(type, listener) {
+  if ('function' !== typeof listener) {
+    throw new Error('addListener only takes instances of Function');
+  }
+
+  if (!this._events) this._events = {};
+
+  // To avoid recursion in the case that type == "newListeners"! Before
+  // adding it to the listeners, first emit "newListeners".
+  this.emit('newListener', type, listener);
+
+  if (!this._events[type]) {
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  } else if (isArray(this._events[type])) {
+
+    // Check for listener leak
+    if (!this._events[type].warned) {
+      var m;
+      if (this._events.maxListeners !== undefined) {
+        m = this._events.maxListeners;
+      } else {
+        m = defaultMaxListeners;
+      }
+
+      if (m && m > 0 && this._events[type].length > m) {
+        this._events[type].warned = true;
+        console.error('(node) warning: possible EventEmitter memory ' +
+                      'leak detected. %d listeners added. ' +
+                      'Use emitter.setMaxListeners() to increase limit.',
+                      this._events[type].length);
+        console.trace();
+      }
+    }
+
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  } else {
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  var self = this;
+  self.on(type, function g() {
+    self.removeListener(type, g);
+    listener.apply(this, arguments);
+  });
+
+  return this;
+};
+
+EventEmitter.prototype.removeListener = function(type, listener) {
+  if ('function' !== typeof listener) {
+    throw new Error('removeListener only takes instances of Function');
+  }
+
+  // does not use listeners(), so no side effect of creating _events[type]
+  if (!this._events || !this._events[type]) return this;
+
+  var list = this._events[type];
+
+  if (isArray(list)) {
+    var i = indexOf(list, listener);
+    if (i < 0) return this;
+    list.splice(i, 1);
+    if (list.length == 0)
+      delete this._events[type];
+  } else if (this._events[type] === listener) {
+    delete this._events[type];
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  if (arguments.length === 0) {
+    this._events = {};
+    return this;
+  }
+
+  // does not use listeners(), so no side effect of creating _events[type]
+  if (type && this._events && this._events[type]) this._events[type] = null;
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  if (!this._events) this._events = {};
+  if (!this._events[type]) this._events[type] = [];
+  if (!isArray(this._events[type])) {
+    this._events[type] = [this._events[type]];
+  }
+  return this._events[type];
+};
+
+})(require("__browserify_process"))
+},{"__browserify_process":11}],10:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -1646,7 +1646,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":7}],5:[function(require,module,exports){
+},{"events":9}],7:[function(require,module,exports){
 var http = module.exports;
 var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
@@ -1708,7 +1708,7 @@ var xhrHttp = (function () {
     }
 })();
 
-},{"events":7,"./lib/request":12}],13:[function(require,module,exports){
+},{"events":9,"./lib/request":12}],13:[function(require,module,exports){
 require=(function(e,t,n,r){function i(r){if(!n[r]){if(!t[r]){if(e)return e(r);throw new Error("Cannot find module '"+r+"'")}var s=n[r]={exports:{}};t[r][0](function(e){var n=t[r][1][e];return i(n?n:e)},s,s.exports)}return n[r].exports}for(var s=0;s<r.length;s++)i(r[s]);return i})(typeof require!=="undefined"&&require,{1:[function(require,module,exports){
 exports.readIEEE754 = function(buffer, offset, isBE, mLen, nBytes) {
   var e, m,
@@ -5715,7 +5715,7 @@ Req.prototype.setLocation = function (uri) {
 };
 
 })(require("__browserify_process"),require("__browserify_buffer").Buffer)
-},{"url":9,"http":5,"https":4,"stream":6,"through":14,"duplexer":15,"__browserify_process":11,"__browserify_buffer":13}],14:[function(require,module,exports){
+},{"url":4,"http":7,"https":6,"stream":8,"through":14,"duplexer":15,"__browserify_process":11,"__browserify_buffer":13}],14:[function(require,module,exports){
 (function(process){var Stream = require('stream')
 
 // through
@@ -5821,7 +5821,7 @@ function through (write, end) {
 
 
 })(require("__browserify_process"))
-},{"stream":6,"__browserify_process":11}],15:[function(require,module,exports){
+},{"stream":8,"__browserify_process":11}],15:[function(require,module,exports){
 var Stream = require("stream")
 var writeMethods = ["write", "end", "destroy"]
 var readMethods = ["resume", "pause"]
@@ -5910,7 +5910,7 @@ function duplex(writer, reader) {
     }
 }
 
-},{"stream":6}],16:[function(require,module,exports){
+},{"stream":8}],16:[function(require,module,exports){
 (function(){// UTILITY
 var util = require('util');
 var Buffer = require("buffer").Buffer;
@@ -6227,7 +6227,7 @@ assert.doesNotThrow = function(block, /*optional*/error, /*optional*/message) {
 assert.ifError = function(err) { if (err) {throw err;}};
 
 })()
-},{"util":8,"buffer":17}],18:[function(require,module,exports){
+},{"util":10,"buffer":17}],18:[function(require,module,exports){
 var Stream = require('stream');
 
 var Response = module.exports = function (res) {
@@ -6348,7 +6348,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{"stream":6}],19:[function(require,module,exports){
+},{"stream":8}],19:[function(require,module,exports){
 exports.readIEEE754 = function(buffer, offset, isBE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -7974,7 +7974,7 @@ var indexOf = function (xs, x) {
 };
 
 })()
-},{"stream":6,"buffer":17,"./response":18,"concat-stream":21}],21:[function(require,module,exports){
+},{"stream":8,"buffer":17,"./response":18,"concat-stream":21}],21:[function(require,module,exports){
 (function(Buffer){var stream = require('stream')
 var util = require('util')
 
@@ -8025,5 +8025,5 @@ module.exports = function(cb) {
 module.exports.ConcatStream = ConcatStream
 
 })(require("__browserify_buffer").Buffer)
-},{"stream":6,"util":8,"__browserify_buffer":13}]},{},[1])
+},{"stream":8,"util":10,"__browserify_buffer":13}]},{},[1])
 ;
