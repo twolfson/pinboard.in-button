@@ -33,7 +33,8 @@
     "express": "~3.1.0",
     "grunt-templater": "git://github.com/twolfson/grunt-templater.git#dev/support.dynamic.variables",
     "mustache": "~0.7.2",
-    "glob": "~3.1.21"
+    "glob": "~3.1.21",
+    "process": "git://github.com/twolfson/node-process.git#bug/firefox.extension.broken2"
   },
   "keywords": [],
   "dependencies": {
