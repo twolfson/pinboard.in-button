@@ -28,6 +28,9 @@
   "scripts": {
     "test": "grunt test"
   },
+  "dependencies": {
+    "hyperquest": "git://github.com/twolfson/hyperquest.git#bug/cannot.use.alternative.protocols"
+  },
   "devDependencies": {
     "grunt": "~0.3.17",
     "express": "~3.1.0",
@@ -37,8 +40,5 @@
     "process": "git://github.com/twolfson/node-process.git#bug/firefox.extension.broken2",
     "browserify": "~2.13.2"
   },
-  "keywords": [],
-  "dependencies": {
-    "hyperquest": "~0.1.4"
-  }
+  "keywords": []
 }
