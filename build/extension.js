@@ -44,97 +44,97 @@
 //   appId: 27849
 // });
 
-appAPI.ready(function($) {
+// Rename appAPI to app (derp)
+var app = appAPI;
 
+// Make an error first request handler
+var appRequest = app.request,
+    appRequestGet = appRequest.get,
+    getFn = function (url, cb) {
+      var options = url;
 
-  // Rename appAPI to app (derp)
-  var app = appAPI;
+      // If the options are a string, upcast it as an object
+      if (typeof options === 'string') {
+        options = {url: url};
+      }
 
-  // Make an error first request handler
-  var appRequest = app.request,
-      appRequestGet = appRequest.get,
-      getFn = function (url, cb) {
-        var options = url;
+      // If there are headers, expand the name
+      var headers = options.headers;
+      if (headers) { options.additionalRequestHeaders = headers; }
 
-        // If the options are a string, upcast it as an object
-        if (typeof options === 'string') {
-          options = {url: url};
-        }
+      // TODO: Add properties to clone of options not options itself.
+      // This could cause unwanted side-effects. However, this is limited to the scope of the repo.
 
-        // If there are headers, expand the name
-        var headers = options.headers;
-        if (headers) { options.additionalRequestHeaders = headers; }
+      // Add a success and failure handler to options
+      options.onSuccess = function (body, addlInfo) {
+        cb(null, {body: body, headers: addlInfo.headers});
+      };
 
-        // TODO: Add properties to clone of options not options itself.
-        // This could cause unwanted side-effects. However, this is limited to the scope of the repo.
+      options.onFailure = function (httpCode) {
+        var err = new Error('HTTP ERROR (' + httpCode + '): Failed to reach "' + url + '"');
+        cb(err);
+      };
 
-        // Add a success and failure handler to options
-        options.onSuccess = function (body, addlInfo) {
-          cb(null, {body: body, headers: addlInfo.headers});
-        };
+      // Call the normal method
+      appRequestGet(options);
+    },
+    // TODO: POST in similar fashion
+    request = getFn;
 
-        options.onFailure = function (httpCode) {
-          var err = new Error('HTTP ERROR (' + httpCode + '): Failed to reach "' + url + '"');
-          cb(err);
-        };
+// Expose request as an object with {get, post}
+// that can be conveniently invoked for get
+request.get = getFn;
 
-        // Call the normal method
-        appRequestGet(options);
-      },
-      // TODO: POST in similar fashion
-      request = getFn;
-
-  // Expose request as an object with {get, post}
-  // that can be conveniently invoked for get
-  request.get = getFn;
-
-  console.log('hey', window.location);
-  // If we are on a crossrider debug page
-  // http://crossrider.com/apps/27849/debug
-  var location = window.location,
-      isCrossrider = location.hostname === 'crossrider.com',
-      isDebugPage = location.pathname.match('/debug');
-  console.log('abba');
-  if (isCrossrider && isDebugPage) {
-  console.log('zzabba');
-    // TODO: Move this into a build conditional
-    // TODO: Move back off of health and onto file watcher for extension.js -> triggers reload of page
-    // When the page is loaded, start up a watcher script
-    request.get('http://localhost:3000/background.js', function (err, res) {
-      // Watch the /background.js to see if it changes
-      var _bgCode = res.body;
-      setInterval(function () {
-        // If it does, click the reload background code button
-        request.get('http://localhost:3000/background.js', function (err, res) {
-          var bgCode = res.body;
-          if (bgCode !== _bgCode) {
-            unsafeWindow.$('#debug-reload-background').click()
-            _bgCode = bgCode;
-          }
-        });
-      }, 1e3);
-    });
-  } else {
-    console.log('Be sure you are running on crossrider.com/debug');
-  }
-
+console.log('hey', window.location);
+// If we are on a crossrider debug page
+// http://crossrider.com/apps/27849/debug
+var location = window.location,
+    isCrossrider = location.hostname === 'crossrider.com',
+    isDebugPage = location.pathname.match('/debug');
+console.log('abba');
+if (isCrossrider && isDebugPage) {
+console.log('zzabba');
   // TODO: Move this into a build conditional
-  // Start a watcher for extension.js
-  console.log('yyy');
-  request.get('http://localhost:3000/extension.js', function (err, res) {
-    // Watch the /extension.js to see if it changes
-    var _extCode = res.body;
-    console.log(_extCode);
+  // TODO: Move back off of health and onto file watcher for extension.js -> triggers reload of page
+  // When the page is loaded, start up a watcher script
+  request.get('http://localhost:3000/background.js', function (err, res) {
+    // Watch the /background.js to see if it changes
+    var _bgCode = res.body;
     setInterval(function () {
-      // If it does, click the reload extension code button
-      request.get('http://localhost:3000/extension.js', function (err, res) {
-        var extCode = res.body;
-        if (extCode !== _extCode) {
-          unsafeWindow.location.reload();
+      // If it does, click the reload background code button
+      request.get('http://localhost:3000/background.js', function (err, res) {
+        var bgCode = res.body;
+        if (bgCode !== _bgCode) {
+          unsafeWindow.$('#debug-reload-background').click()
+          _bgCode = bgCode;
         }
       });
     }, 1e3);
   });
+} else {
+  console.log('Be sure you are running on crossrider.com/debug');
+}
+
+// TODO: Move this into a build conditional
+// Start a watcher for extension.js
+console.log('yyy');
+request.get('http://localhost:3000/extension.js', function (err, res) {
+  // Watch the /extension.js to see if it changes
+  var _extCode = res.body;
+  console.log(_extCode);
+  setInterval(function () {
+    // If it does, click the reload extension code button
+    request.get('http://localhost:3000/extension.js', function (err, res) {
+      var extCode = res.body;
+      if (extCode !== _extCode) {
+        unsafeWindow.location.reload();
+      }
+    });
+  }, 1e3);
+});
+appAPI.ready(function($) {
+
+
 
 
   // Place your code here (you can also define new functions above this scope)
