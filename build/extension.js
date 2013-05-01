@@ -4,77 +4,129 @@
   For more information please visit our docs site: http://docs.crossrider.com
 *************************************************************************************/
 
-// // Rename appAPI to app (derp)
-// var app = appAPI,
-//     request = require('./scripts/request');
+// DEV: Move to mustache layout to share common modules
+// DEV: Might be even better to move to browserify but uncertain -- gets us qs and such
 
-// // If we are on a crossrider debug page
-// // http://crossrider.com/apps/27849/debug
-// var location = window.location,
-//     isCrossrider = location.hostname === 'crossrider.com',
-//     isDebugPage = location.pathname.match('/debug');
-// if (isCrossrider && isDebugPage) {
-//   // TODO: Move this into a build conditional
-//   // Watch /background.js to see if it changes
-//   request('http://localhost:3000/background.js', function (err, res, body) {
-//     var _bgCode = body;
-//     setInterval(function () {
-//       // If it does, click the reload background code button
-//       request('http://localhost:3000/background.js', function (err, res, body) {
-//         var bgCode = body;
-//         if (bgCode !== _bgCode) {
-//           unsafeWindow.$('#debug-reload-background').click();
-//           _bgCode = bgCode;
-//         }
-//       });
-//     }, 1e3);
-//   });
-// } else {
-//   console.log('Be sure you are running on crossrider.com/debug');
-// }
 
-// // TODO: Move this into a build conditional
-// // Watch /extension.js to see if it changes
-// request('http://localhost:3000/extension.js', function (err, res, body) {
-//   var _extCode = body;
-//   setInterval(function () {
-//     // If it does, refresh the page
-//     request('http://localhost:3000/extension.js', function (err, res, body) {
-//       var extCode = body;
-//       console.log('yyy', extCode, _extCode);
-//       if (extCode !== _extCode) {
-//         unsafeWindow.location.reload();
-//       }
-//     });
-//   }, 1e3);
+// // Discovered the following commands to reset our plugins from the Browser
+// http://crossrider.com/apps/27849/debug
+// $("body").fireExtensionEvent("debug_request_reload_background", {
+//   appId: 27849
 // });
 
+// $("body").fireExtensionEvent("debug_request_reload_plugins", {
+//   appId: 27849
+// });
 
-var a = '1';
 appAPI.ready(function($) {
-// var x = XMLHttpRequest();
-// x.open('GET', 'http://localhost:3000/extension.js', true);
-// x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-// x.onreadystatechange = function () {
-//   console.log(x.responseText);
-// };
 
-// x.send();
-  var a = a || '3';
-  console.log('aaa', a);
-  // // TODO: Add `data` to getFn
-  // // TODO: Handling of username + password
-  // // TODO: Prefer to use token over persistence of password
-  // var pinboard_uri = 'https://api.pinboard.in/v1/posts/get',
-  //     url = pinboard_uri + '?url=' + encodeURIComponent(window.location.href);
-  // // request.get(url, function (err, res) {
-  // //   console.log("ERROR2?" + err);
-  // //   console.log("RES2?" + JSON.stringify(res));
-  // // });
 
-  // appAPI.message.addListener(function (msg) {
-  //   console.log('MESSAGE RECEIVED: ' + msg);
+  // Rename appAPI to app (derp)
+  var app = appAPI;
+
+  // Make an error first request handler
+  var appRequest = app.request,
+      appRequestGet = appRequest.get,
+      getFn = function (url, cb) {
+        var options = url;
+
+        // If the options are a string, upcast it as an object
+        if (typeof options === 'string') {
+          options = {url: url};
+        }
+
+        // If there are headers, expand the name
+        var headers = options.headers;
+        if (headers) { options.additionalRequestHeaders = headers; }
+
+        // TODO: Add properties to clone of options not options itself.
+        // This could cause unwanted side-effects. However, this is limited to the scope of the repo.
+
+        // Add a success and failure handler to options
+        options.onSuccess = function (body, addlInfo) {
+          cb(null, {body: body, headers: addlInfo.headers});
+        };
+
+        options.onFailure = function (httpCode) {
+          var err = new Error('HTTP ERROR (' + httpCode + '): Failed to reach "' + url + '"');
+          cb(err);
+        };
+
+        // Call the normal method
+        appRequestGet(options);
+      },
+      // TODO: POST in similar fashion
+      request = getFn;
+
+  // Expose request as an object with {get, post}
+  // that can be conveniently invoked for get
+  request.get = getFn;
+
+  console.log('hey', window.location);
+  // If we are on a crossrider debug page
+  // http://crossrider.com/apps/27849/debug
+  var location = window.location,
+      isCrossrider = location.hostname === 'crossrider.com',
+      isDebugPage = location.pathname.match('/debug');
+  console.log('abba');
+  if (isCrossrider && isDebugPage) {
+  console.log('zzabba');
+    // TODO: Move this into a build conditional
+    // TODO: Move back off of health and onto file watcher for extension.js -> triggers reload of page
+    // When the page is loaded, start up a watcher script
+    request.get('http://localhost:3000/background.js', function (err, res) {
+      // Watch the /background.js to see if it changes
+      var _bgCode = res.body;
+      setInterval(function () {
+        // If it does, click the reload background code button
+        request.get('http://localhost:3000/background.js', function (err, res) {
+          var bgCode = res.body;
+          if (bgCode !== _bgCode) {
+            unsafeWindow.$('#debug-reload-background').click()
+            _bgCode = bgCode;
+          }
+        });
+      }, 1e3);
+    });
+  } else {
+    console.log('Be sure you are running on crossrider.com/debug');
+  }
+
+  // TODO: Move this into a build conditional
+  // Start a watcher for extension.js
+  console.log('yyy');
+  request.get('http://localhost:3000/extension.js', function (err, res) {
+    // Watch the /extension.js to see if it changes
+    var _extCode = res.body;
+    console.log(_extCode);
+    setInterval(function () {
+      // If it does, click the reload extension code button
+      request.get('http://localhost:3000/extension.js', function (err, res) {
+        var extCode = res.body;
+        if (extCode !== _extCode) {
+          unsafeWindow.location.reload();
+        }
+      });
+    }, 1e3);
+  });
+
+
+  // Place your code here (you can also define new functions above this scope)
+  // The $ object is the extension's jQuery object
+
+  // TODO: Add `data` to getFn
+  // TODO: Handling of username + password
+  // TODO: Prefer to use token over persistence of password
+  var pinboard_uri = 'https://api.pinboard.in/v1/posts/get',
+      url = pinboard_uri + '?url=' + encodeURIComponent(window.location.href);
+  // request.get(url, function (err, res) {
+  //   console.log("ERROR2?" + err);
+  //   console.log("RES2?" + JSON.stringify(res));
   // });
+
+  appAPI.message.addListener(function (msg) {
+    console.log('MESSAGE RECEIVED: ' + msg);
+  });
 
 });
 
