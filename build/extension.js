@@ -21,7 +21,7 @@
 //     'debug_request_reload_background',
 //     {appId: 27849});
 
-// Closest in-browser iteration
+// // Closest in-browser iteration
 // var el = document.body;
 // var evt = 'debug_request_reload_background';
 // var data = {appId: 27849};
@@ -40,6 +40,7 @@
 //   el.dispatchEvent(event);
 // }
 
+// Plugins are not as practical -- still require a page reload =(
 // $("body").fireExtensionEvent("debug_request_reload_plugins", {
 //   appId: 27849
 // });
