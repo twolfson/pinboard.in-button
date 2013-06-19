@@ -1,4 +1,4 @@
-# pinboard.in button
+# pinboard.in button [![Donate on Gittip](http://badgr.co/gittip/twolfson.png)](https://www.gittip.com/twolfson/)
 
 Another pinboard.in browser extension.
 
